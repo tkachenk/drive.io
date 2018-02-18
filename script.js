@@ -7,14 +7,33 @@ var sizeBlockRoad = 100;
 var wRoad = 80;
 var context = canvas.getContext("2d");
 var prevRand = 0;
-var x = 0,y = 0,xn = w/2,yn = h;  //глобальные переменные координат
+var x = 0,y = 0,xn = w/2-wRoad/2 ,yn = h;  //глобальные переменные координат
 var colorRoad = "#FFFFFF";
-var colorBackground = "#FFA500"
+var colorBackground = "#FFA500";
+var colorCar = "#000000";
 var array = new Array();
+var angle = 0;
+var imgCar = new Image();
+		imgCar.src = "car.png";
+var flag_left = false;
+var flag_right = false;
 
-
-
-
+function changePos() {
+	//if (!collision()) {
+		if (flag_left) {
+			angle -= 2.3;  //скорость поворота менять здесь
+		}
+		if (flag_right) {
+			angle += 2.3;
+		}
+		xn += 2*Math.sin(-angle * Math.PI/180);  //скорость движения
+		yn += 2*Math.cos(-angle * Math.PI/180);
+		x = xn;
+		y = yn;
+		drawRoad();
+		drawCar(angle);
+	//}
+}
 function direct(rx, ry, route) {    //функция прорисовки прямого участка дороги
 	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -87,7 +106,10 @@ function right(rx, ry, route) {   //функция прорисовки прав
 }
 
 function generateRoad(argument) {
-	for (var i = 0; i < 50; i++) {  //формирование массив последовательности элементов дороги
+	for (var i = 0; i < 5; i++) {
+		array[i] = 0;
+	}
+	for (var i = 5; i < 50; i++) {  //формирование массив последовательности элементов дороги
 		var rand = 0;
 		var flag = true;
 
@@ -161,29 +183,59 @@ function drawRoad() {  //функция прорисовки дороги
 	}
 }
 
+function drawCar(ang) {
+	context.translate(w/2, h * 0.75 - imgCar.height/2);
+	context.rotate(ang * Math.PI/180); 
+	context.drawImage(imgCar, - imgCar.width/2 , - imgCar.height/2);
+	context.rotate(-ang * Math.PI/180);
+	context.translate( -(w/2), -(h*0.75-imgCar.height/2));
+}
+
 window.onload = function () {
 	x = xn;
 	y = yn;
 	generateRoad();
 	drawRoad();
+	drawCar(angle);
+	setInterval(changePos, 10);
 }
 
 window.onkeydown = function (e) {
-	if (e.keyCode == 38) {
-		yn -= 6
-	}
-	if (e.keyCode == 40) {
-		yn += 6
-	}
 	if (e.keyCode == 37) {
-		xn -= 6
+		flag_left = true;
 	}
-	if (e.keyCode == 39) {
-		xn += 6
-	}
-	x = xn;
-	y = yn;
-	drawRoad();
 	
+	if (e.keyCode == 39) {
+		flag_right = true;
+	}
+}
 
+window.onkeyup = function (e) {
+	if (e.keyCode == 37) {
+		flag_left = false;
+	}
+	
+	if (e.keyCode == 39) {
+		flag_right = false;
+	}
+}
+
+function collision () {
+	var imgData = context.getImageData(w/2-imgCar.width/2, h * 0.75 - imgCar.width/2 , imgCar.width, imgCar.width);
+	var pixels = imgData.data;
+	var k = 0;
+	for (var i = 0; n = pixels.length, i < n; i += 4) {
+		var red = pixels[i];
+		var green = pixels[i+1];
+		var blue = pixels[i+2];
+		if (red==255 && green==165 && blue==0) {
+			k++;
+		}
+	}
+	if (k>700) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
