@@ -1,0 +1,26 @@
+{
+"main": "index.html",
+"name": "Drive.io",
+"description": "Game test js",
+"version": "0.0.1",
+"keywords": [ "game", "nwjs" ],
+"window": {
+"title": "Dummy demo",
+"icon": "icon.png",
+"toolbar": false,
+"frame": true,
+"width": 700,
+"height": 700,
+"position": "center",
+"min_width": 400,
+"min_height": 200,
+"max_width": 800,
+"max_height": 600
+},
+"author": "nedudi",
+"license": "MIT",
+"dependencies": {
+"moment": "latest",
+"handlebars": "^2.0.0"
+}
+}
