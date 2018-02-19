@@ -12,10 +12,20 @@
 			overflow-x: hidden;
 			overflow-y: hidden;
 		}
+		#retry {
+			display: none;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translateX(-50%), translateY(-50%);
+			font-size: 20px;
+			font-family: sans-serif;
+		}
 	</style>
 </head>
 <body>
 	<canvas id="canvas"></canvas>
 	<script src="script.js"></script>
+	<button id="retry" onclick="start()">RETRY?</button>
 </body>
 </html>

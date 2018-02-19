@@ -9,14 +9,15 @@ var context = canvas.getContext("2d");
 var prevRand = 0;
 var x = 0,y = 0,xn = w/2-wRoad/2 ,yn = h;  //глобальные переменные координат
 var colorRoad = "#FFFFFF";
-var colorBackground = "#000000";
+var colorBackground = "#C1DBAB";
 var array = new Array();
 var angle = 0;
 var imgCar = new Image();
 		imgCar.src = "car.png";
 var flag_left = false;
 var flag_right = false;
-
+var timer;
+var btn;
 
 function direct(rx, ry, route) {    //функция прорисовки прямого участка дороги
 	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
@@ -156,7 +157,7 @@ function generateRoad(argument) {
 	for (var i = 0; i < 5; i++) {
 		array[i] = 0;
 	}
-	for (var i = 5; i < 50; i++) {  //формирование массив последовательности элементов дороги
+	for (var i = 5; i < 100; i++) {  //формирование массив последовательности элементов дороги
 		var rand = 0;
 		var flag = true;
 
@@ -242,21 +243,39 @@ function drawRoad() {  //функция прорисовки дороги
 }
 
 function drawCar(ang) {
-	context.translate(w/2, h * 0.75 - imgCar.height/2);
+	context.translate(w/2, h * 0.75 );
 	context.rotate(ang * Math.PI/180); 
 	context.drawImage(imgCar, - imgCar.width/2 , - imgCar.height/2);
 	context.rotate(-ang * Math.PI/180);
-	context.translate( -(w/2), -(h*0.75-imgCar.height/2));
+	context.translate( -(w/2), -(h*0.75));
 }
 
-window.onload = function () {
-	x = xn;
+function start() {
+	btn.style.display = "none";
+	prevRand = 0;
+	x = 0,y = 0,xn = w/2-wRoad/2 ,yn = h; 
+	angle = 0;
+	flag_left = false;
+	flag_right = false;
+	x = xn-wRoad/2;
 	y = yn;
 	generateRoad();
 	drawRoad();
 	drawCar(angle);
-	setInterval(changePos, 25);
+	timer = setInterval(changePos, 25);
 }
+
+window.onload = function (){
+	btn = document.getElementById("retry");
+	x = xn-wRoad/2;
+	y = yn;
+	generateRoad();
+	drawRoad();
+	drawCar(angle);
+	timer = setInterval(changePos, 25);
+}
+
+
 
 window.onkeydown = function (e) {
 	if (e.keyCode == 37) {
@@ -279,36 +298,32 @@ window.onkeyup = function (e) {
 }
 
 function changePos() {
-//	if (!collision()) {
-		if (flag_left) {
-			angle -= 4;  //скорость поворота менять здесь
-		}
-		if (flag_right) {
-			angle += 4;
-		}
-		xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
-		yn += 4*Math.cos(-angle * Math.PI/180);
-		x = xn;
-		y = yn;
-		drawRoad();
-		drawCar(angle);
-//	}
+	if (flag_left) {
+		angle -= 4;  //скорость поворота менять здесь
+	}
+	if (flag_right) {
+		angle += 4;
+	}
+	xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
+	yn += 4*Math.cos(-angle * Math.PI/180);
+	x = xn;
+	y = yn;
+	drawRoad();
+	if (collision()) {
+		clearInterval(timer);
+		btn.style.display = "block";
+	}
+	drawCar(angle);
 }
 
 function collision () {
-	var imgData = context.getImageData(w/2-imgCar.width/2, h * 0.75 - imgCar.width/2 , imgCar.width, imgCar.width);
-	var pixels = imgData.data;
-	var k = 0;
-	for (var i = 0; n = pixels.length, i < n; i += 4) {
-		var red = pixels[i];
-		var green = pixels[i+1];
-		var blue = pixels[i+2];
-		if (red==255 && green==165 && blue==0) {
-			k++;
-			if (k>200) {
-				return true;
-			}
-		}
+	var imgData = context.getImageData(w/2, h * 0.75, 1, 1);
+	var pixel = imgData.data;
+	var red = pixel[0];
+	var green = pixel[1];
+	var blue = pixel[2];
+	if (red==193 && green==219 && blue==171) {
+		return true;
 	}
 	return false;
 }
