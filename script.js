@@ -18,22 +18,7 @@ var imgCar = new Image();
 var flag_left = false;
 var flag_right = false;
 
-function changePos() {
-	//if (!collision()) {
-		if (flag_left) {
-			angle -= 2.3;  //скорость поворота менять здесь
-		}
-		if (flag_right) {
-			angle += 2.3;
-		}
-		xn += 2*Math.sin(-angle * Math.PI/180);  //скорость движения
-		yn += 2*Math.cos(-angle * Math.PI/180);
-		x = xn;
-		y = yn;
-		drawRoad();
-		drawCar(angle);
-	//}
-}
+
 function direct(rx, ry, route) {    //функция прорисовки прямого участка дороги
 	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -79,6 +64,32 @@ function left(rx, ry, route) {    //функция прорисовки лево
 	}
 }
 
+function left_low(rx, ry, route) {    //функция прорисовки левого поворота
+	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	switch (route) {
+		case "up":
+			context.beginPath();
+			context.arc(rx-80, ry, 80, 0, -Math.PI/2, true);
+			context.lineTo(rx-80, ry - wRoad);
+			context.arc(rx-80, ry, wRoad + 80, -Math.PI/2, 0 );
+			context.closePath();
+			context.fill();
+			x -= 80;
+			y -= 80;
+			break;
+		case "right":
+			context.beginPath();
+			context.arc(rx, ry-80, 80, Math.PI/2, 0, true);
+			context.lineTo(rx+80, ry-80);
+			context.arc(rx, ry-80, wRoad + 80, 0, Math.PI/2);
+			context.closePath();
+			context.fill();
+			x += 80;
+			y -= 80;
+			break;
+	}
+}
+
 function right(rx, ry, route) {   //функция прорисовки правого поворота
 	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -105,6 +116,32 @@ function right(rx, ry, route) {   //функция прорисовки прав
 	}
 }
 
+function right_low(rx, ry, route) {   //функция прорисовки правого поворота
+	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	switch (route) {
+		case "up":
+			context.beginPath();
+			context.arc(rx + wRoad + 80, ry, wRoad +80, Math.PI, -Math.PI/2, false);
+			context.lineTo(rx + wRoad + 80, ry - 80);
+			context.arc(rx + wRoad + 80, ry, 80, -Math.PI/2, Math.PI, true);
+			context.closePath();
+			context.fill();
+			x += wRoad+80;
+			y -= wRoad+80;
+			break;
+		case "left":
+			context.beginPath();
+			context.arc(rx, ry-wRoad-80, wRoad +80, Math.PI/2, Math.PI, false);
+			context.lineTo(rx-80 , ry-wRoad-80);
+			context.arc(rx, ry-wRoad-80, 80, Math.PI, Math.PI/2, true);
+			context.closePath();
+			context.fill();
+			x -= wRoad+80;
+			y -= wRoad+80;
+			break;
+	}
+}
+
 function generateRoad(argument) {
 	for (var i = 0; i < 5; i++) {
 		array[i] = 0;
@@ -114,7 +151,7 @@ function generateRoad(argument) {
 		var flag = true;
 
 		while (flag) {             //алгоритм корректной последовательности элементов дороги
-			rand = Math.round(Math.random() * (7 - 0) + 0);
+			rand = Math.round(Math.random() * (11 - 0) + 0);
 			if ((prevRand==0&&rand==0)||
 				  (prevRand==1&&rand==1)||
 				  (prevRand==2&&rand==2)) {
@@ -124,24 +161,23 @@ function generateRoad(argument) {
 				case 0:
 				case 4:
 				case 6:
-					if (rand==0||rand==3||rand==5) {
+				case 8:
+				case 10:
+					if (rand==0||rand==3||rand==5||rand==7||rand==9) {
 						flag = false;
 					}
 					break;
 				case 1:
 				case 3:
-					if (rand==1||rand==6) {
+				case 7:
+					if (rand==1||rand==6||rand==10) {
 						flag = false;
 					}
 					break;
 				case 2:
 				case 5:
-					if (rand==2||rand==4) {
-						flag = false;
-					}
-					break;
-				case 4:
-					if (rand==1||rand==3||rand==5) {
+				case 9:
+					if (rand==2||rand==4||rand==8) {
 						flag = false;
 					}
 					break;
@@ -179,6 +215,18 @@ function drawRoad() {  //функция прорисовки дороги
 			case 6:
 				right(x, y, "left");
 				break;
+			case 7:
+				left_low(x, y, "up");
+				break;
+			case 8:
+				left_low(x, y, "right");
+				break;
+			case 9:
+				right_low(x, y, "up");
+				break;
+			case 10:
+				right_low(x, y, "left");
+				break;
 		}
 	}
 }
@@ -197,7 +245,7 @@ window.onload = function () {
 	generateRoad();
 	drawRoad();
 	drawCar(angle);
-	setInterval(changePos, 10);
+	setInterval(changePos, 25);
 }
 
 window.onkeydown = function (e) {
@@ -220,6 +268,23 @@ window.onkeyup = function (e) {
 	}
 }
 
+function changePos() {
+//	if (!collision()) {
+		if (flag_left) {
+			angle -= 3;  //скорость поворота менять здесь
+		}
+		if (flag_right) {
+			angle += 3;
+		}
+		xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
+		yn += 4*Math.cos(-angle * Math.PI/180);
+		x = xn;
+		y = yn;
+		drawRoad();
+		drawCar(angle);
+//	}
+}
+
 function collision () {
 	var imgData = context.getImageData(w/2-imgCar.width/2, h * 0.75 - imgCar.width/2 , imgCar.width, imgCar.width);
 	var pixels = imgData.data;
@@ -230,12 +295,10 @@ function collision () {
 		var blue = pixels[i+2];
 		if (red==255 && green==165 && blue==0) {
 			k++;
+			if (k>200) {
+				return true;
+			}
 		}
 	}
-	if (k>700) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return false;
 }
