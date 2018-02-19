@@ -9,8 +9,7 @@ var context = canvas.getContext("2d");
 var prevRand = 0;
 var x = 0,y = 0,xn = w/2-wRoad/2 ,yn = h;  //глобальные переменные координат
 var colorRoad = "#FFFFFF";
-var colorBackground = "#FFA500";
-var colorCar = "#000000";
+var colorBackground = "#000000";
 var array = new Array();
 var angle = 0;
 var imgCar = new Image();
@@ -25,14 +24,17 @@ function direct(rx, ry, route) {    //функция прорисовки пря
 		case "up":	
 			context.fillRect(rx, ry, wRoad, -sizeBlockRoad);
 			y -= sizeBlockRoad;
+			y++;
 			break;
 		case "left":
 			context.fillRect(rx, ry, -sizeBlockRoad, -wRoad);
 			x -= sizeBlockRoad;
+			x++;
 			break;
 		case "right":
 			context.fillRect(rx, ry, sizeBlockRoad, wRoad);
 			x += sizeBlockRoad;
+			x--;
 			break;
 		
 	}
@@ -49,6 +51,7 @@ function left(rx, ry, route) {    //функция прорисовки лево
 			context.closePath();
 			context.fill();
 			x -= 10;
+			x++;
 			y -= 10;
 			break;
 		case "right":
@@ -60,6 +63,7 @@ function left(rx, ry, route) {    //функция прорисовки лево
 			context.fill();
 			x += 10;
 			y -= 10;
+			y++;
 			break;
 	}
 }
@@ -75,6 +79,7 @@ function left_low(rx, ry, route) {    //функция прорисовки ле
 			context.closePath();
 			context.fill();
 			x -= 80;
+			x++;
 			y -= 80;
 			break;
 		case "right":
@@ -86,6 +91,7 @@ function left_low(rx, ry, route) {    //функция прорисовки ле
 			context.fill();
 			x += 80;
 			y -= 80;
+			y++;
 			break;
 	}
 }
@@ -101,6 +107,7 @@ function right(rx, ry, route) {   //функция прорисовки прав
 			context.closePath();
 			context.fill();
 			x += wRoad+10;
+			x--;
 			y -= wRoad+10;
 			break;
 		case "left":
@@ -112,6 +119,7 @@ function right(rx, ry, route) {   //функция прорисовки прав
 			context.fill();
 			x -= wRoad+10;
 			y -= wRoad+10;
+			y++;
 			break;
 	}
 }
@@ -127,6 +135,7 @@ function right_low(rx, ry, route) {   //функция прорисовки пр
 			context.closePath();
 			context.fill();
 			x += wRoad+80;
+			x--;
 			y -= wRoad+80;
 			break;
 		case "left":
@@ -138,6 +147,7 @@ function right_low(rx, ry, route) {   //функция прорисовки пр
 			context.fill();
 			x -= wRoad+80;
 			y -= wRoad+80;
+			y++;
 			break;
 	}
 }
@@ -271,10 +281,10 @@ window.onkeyup = function (e) {
 function changePos() {
 //	if (!collision()) {
 		if (flag_left) {
-			angle -= 3;  //скорость поворота менять здесь
+			angle -= 4;  //скорость поворота менять здесь
 		}
 		if (flag_right) {
-			angle += 3;
+			angle += 4;
 		}
 		xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
 		yn += 4*Math.cos(-angle * Math.PI/180);
