@@ -7,9 +7,13 @@ var sizeBlockRoad = 100;
 var wRoad = 80;
 var context = canvas.getContext("2d");
 var prevRand = 0;
+var prevRandScheme = 5;
 var x = 0,y = 0,xn = w/2-wRoad/2 ,yn = h;  //глобальные переменные координат
-var colorRoad = "#FFFFFF";
-var colorBackground = "#C1DBAB";
+
+var colorScheme = {
+			background : "",
+			road : ""
+		};
 var array = new Array();
 var angle = 0;
 var imgCar = new Image();
@@ -19,8 +23,9 @@ var flag_right = false;
 var timer;
 var btn;
 
+
 function direct(rx, ry, route) {    //функция прорисовки прямого участка дороги
-	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
 		case "up":	
 			context.fillRect(rx, ry, wRoad, -sizeBlockRoad);
@@ -42,7 +47,7 @@ function direct(rx, ry, route) {    //функция прорисовки пря
 }
 
 function left(rx, ry, route) {    //функция прорисовки левого поворота
-	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
 		case "up":
 			context.beginPath();
@@ -70,7 +75,7 @@ function left(rx, ry, route) {    //функция прорисовки лево
 }
 
 function left_low(rx, ry, route) {    //функция прорисовки левого поворота
-	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
 		case "up":
 			context.beginPath();
@@ -98,7 +103,7 @@ function left_low(rx, ry, route) {    //функция прорисовки ле
 }
 
 function right(rx, ry, route) {   //функция прорисовки правого поворота
-	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
 		case "up":
 			context.beginPath();
@@ -126,7 +131,7 @@ function right(rx, ry, route) {   //функция прорисовки прав
 }
 
 function right_low(rx, ry, route) {   //функция прорисовки правого поворота
-	context.fillStyle = colorRoad;  //route - входное направление движения по дороге 
+	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
 		case "up":
 			context.beginPath();
@@ -201,9 +206,9 @@ function generateRoad(argument) {
 }
 
 function drawRoad() {  //функция прорисовки дороги
-	context.fillStyle = colorBackground;    //закрашивание фона
+	context.fillStyle = colorScheme.background;    //закрашивание фона
 	context.fillRect(0,0,w,h);
-	for (var i = 0; i < 50; i++) {  //цикл прорисовки 50 элементов
+	for (var i = 0; i < 100; i++) {  //цикл прорисовки 100 элементов
 		switch (array[i]) {
 			case 0:
 				direct(x, y, "up");
@@ -260,6 +265,7 @@ function start() {
 	x = xn-wRoad/2;
 	y = yn;
 	generateRoad();
+	colorSchemeRandom();
 	drawRoad();
 	drawCar(angle);
 	timer = setInterval(changePos, 25);
@@ -270,6 +276,7 @@ window.onload = function (){
 	x = xn-wRoad/2;
 	y = yn;
 	generateRoad();
+	colorSchemeRandom();
 	drawRoad();
 	drawCar(angle);
 	timer = setInterval(changePos, 25);
@@ -297,6 +304,41 @@ window.onkeyup = function (e) {
 	}
 }
 
+function colorSchemeRandom() {
+	var rand;
+	do{
+		rand = Math.round(Math.random() * (6 - 0) + 0);
+	} while (rand == prevRandScheme);
+
+	prevRandScheme = rand;
+	switch (rand) {
+		case 0:
+			colorScheme.road = "#F9AE8F";
+			colorScheme.background = "#EAD7B6";
+			break;
+		case 1:
+			colorScheme.road = "#BCDED5";
+			colorScheme.background = "#E5C440";
+			break;
+		case 2:
+			colorScheme.road = "#8281A7";
+			colorScheme.background = "#D9D6B0";
+			break;
+		case 3:
+			colorScheme.road = "#C2CFAE";
+			colorScheme.background = "#A79277";
+			break;
+		case 4:
+			colorScheme.road = "#FECD3D";
+			colorScheme.background = "#242424";
+			break;
+		case 5:
+			colorScheme.road = "#D3649D";
+			colorScheme.background = "#ABA1E2";
+			break;
+	}
+}
+
 function changePos() {
 	if (flag_left) {
 		angle -= 4;  //скорость поворота менять здесь
@@ -319,11 +361,10 @@ function changePos() {
 function collision () {
 	var imgData = context.getImageData(w/2, h * 0.75, 1, 1);
 	var pixel = imgData.data;
-	var red = pixel[0];
-	var green = pixel[1];
-	var blue = pixel[2];
-	if (red==193 && green==219 && blue==171) {
-		return true;
-	}
+
+	if (parseInt(colorScheme.background.substr(1,2),16)==pixel[0]) {return true;}
+	if (parseInt(colorScheme.background.substr(3,2),16)==pixel[1]) {return true;}
+	if (parseInt(colorScheme.background.substr(5,2),16)==pixel[2]) {return true;}
+	
 	return false;
 }
