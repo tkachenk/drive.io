@@ -340,12 +340,6 @@ function colorSchemeRandom() {
 }
 
 function changePos() {
-	if (flag_left) {
-		angle -= 4;  //скорость поворота менять здесь
-	}
-	if (flag_right) {
-		angle += 4;
-	}
 	xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
 	yn += 4*Math.cos(-angle * Math.PI/180);
 	x = xn;
@@ -355,16 +349,34 @@ function changePos() {
 		clearInterval(timer);
 		btn.style.display = "block";
 	}
+	if (flag_left) {
+		angle -= 4;  //скорость поворота менять здесь
+	}
+	if (flag_right) {
+		angle += 4;
+	}
 	drawCar(angle);
 }
 
 function collision () {
-	var imgData = context.getImageData(w/2, h * 0.75, 1, 1);
+
+	var imgData = context.getImageData(w/2-20*Math.sin(-(angle-26.5)*Math.PI/180), h * 0.75 - 20*Math.cos((angle-26.5)*Math.PI/180), 1, 1);
 	var pixel = imgData.data;
 
-	if (parseInt(colorScheme.background.substr(1,2),16)==pixel[0]) {return true;}
-	if (parseInt(colorScheme.background.substr(3,2),16)==pixel[1]) {return true;}
-	if (parseInt(colorScheme.background.substr(5,2),16)==pixel[2]) {return true;}
+	if (parseInt(colorScheme.background.substr(1,2),16)==pixel[0]&&
+		  parseInt(colorScheme.background.substr(3,2),16)==pixel[1]&&
+		  parseInt(colorScheme.background.substr(5,2),16)==pixel[2]) {
+		return true;
+	}
+	
+	imgData = context.getImageData(w/2+20*Math.sin((angle+26.5)*Math.PI/180), h * 0.75 - 20*Math.cos((angle+26.5)*Math.PI/180), 1, 1);
+	pixel = imgData.data;
+
+	if (parseInt(colorScheme.background.substr(1,2),16)==pixel[0]&&
+		  parseInt(colorScheme.background.substr(3,2),16)==pixel[1]&&
+		  parseInt(colorScheme.background.substr(5,2),16)==pixel[2]) {
+		return true;
+	}
 	
 	return false;
 }
