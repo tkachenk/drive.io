@@ -22,8 +22,10 @@ var flag_left = false;
 var flag_right = false;
 var timer;
 var timerSprite;
+var timerScore;
 var btn;
-
+var format = 0;
+var imgArray = new Array();
 
 function direct(rx, ry, route) {    //функция прорисовки прямого участка дороги
 	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
@@ -46,7 +48,6 @@ function direct(rx, ry, route) {    //функция прорисовки пря
 		
 	}
 }
-
 function left(rx, ry, route) {    //функция прорисовки левого поворота
 	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -74,7 +75,6 @@ function left(rx, ry, route) {    //функция прорисовки лево
 			break;
 	}
 }
-
 function left_low(rx, ry, route) {    //функция прорисовки левого поворота
 	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -102,7 +102,6 @@ function left_low(rx, ry, route) {    //функция прорисовки ле
 			break;
 	}
 }
-
 function right(rx, ry, route) {   //функция прорисовки правого поворота
 	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -130,7 +129,6 @@ function right(rx, ry, route) {   //функция прорисовки прав
 			break;
 	}
 }
-
 function right_low(rx, ry, route) {   //функция прорисовки правого поворота
 	context.fillStyle = colorScheme.road;  //route - входное направление движения по дороге 
 	switch (route) {
@@ -158,7 +156,6 @@ function right_low(rx, ry, route) {   //функция прорисовки пр
 			break;
 	}
 }
-
 function generateRoad(argument) {
 	for (var i = 0; i < 5; i++) {
 		array[i] = 0;
@@ -205,7 +202,6 @@ function generateRoad(argument) {
 		array[i] = rand;
 	}
 }
-
 function drawRoad() {  //функция прорисовки дороги
 	context.fillStyle = colorScheme.background;    //закрашивание фона
 	context.fillRect(0,0,w,h);
@@ -247,7 +243,6 @@ function drawRoad() {  //функция прорисовки дороги
 		}
 	}
 }
-
 function drawCar(ang) {
 	context.translate(w/2, h * 0.75 );
 	context.rotate(ang * Math.PI/180); 
@@ -255,7 +250,6 @@ function drawCar(ang) {
 	context.rotate(-ang * Math.PI/180);
 	context.translate( -(w/2), -(h*0.75));
 }
-
 function start() {
 	btn.style.display = "none";
 	prevRand = 0;
@@ -270,9 +264,11 @@ function start() {
 	drawRoad();
 	drawCar(angle);
 	timer = setInterval(changePos, 25);
+	format = 0;
+	timerScore = setInterval(score, 100);
 }
-
 window.onload = function (){
+	genImgArray();
 	btn = document.getElementById("retry");
 	x = xn-wRoad/2;
 	y = yn;
@@ -281,8 +277,9 @@ window.onload = function (){
 	drawRoad();
 	drawCar(angle);
 	timer = setInterval(changePos, 25);
+	initialDate = new Date();
+	timerScore = setInterval(score, 100);
 }
-
 window.onkeydown = function (e) {
 	if (e.keyCode == 37) {
 		flag_left = true;
@@ -292,7 +289,6 @@ window.onkeydown = function (e) {
 		flag_right = true;
 	}
 }
-
 window.onkeyup = function (e) {
 	if (e.keyCode == 37) {
 		flag_left = false;
@@ -302,7 +298,6 @@ window.onkeyup = function (e) {
 		flag_right = false;
 	}
 }
-
 function colorSchemeRandom() {
 	var rand;
 	do{
@@ -337,7 +332,6 @@ function colorSchemeRandom() {
 			break;
 	}
 }
-
 function changePos() {
 	xn += 4*Math.sin(-angle * Math.PI/180);  //скорость движения
 	yn += 4*Math.cos(-angle * Math.PI/180);
@@ -346,6 +340,7 @@ function changePos() {
 	drawRoad();
 	if (collision()) {
 		clearInterval(timer);
+		clearInterval(timerScore);
 		btn.style.display = "block";
 		sprite();
 	}
@@ -357,7 +352,6 @@ function changePos() {
 	}
 	drawCar(angle);
 }
-
 function collision () {
 
 	var imgData = context.getImageData(w/2-20*Math.sin(-(angle-26.5)*Math.PI/180), h * 0.75 - 20*Math.cos((angle-26.5)*Math.PI/180), 1, 1);
@@ -379,18 +373,15 @@ function collision () {
 	}
 		return false;
 }
-
 function sprite() {
-	var imgSprite = new Image();
-	var i = 1;
+	var i = 0;
 	function drawSprite() {
 		x = xn;
 		y = yn;
 		drawRoad();
-		imgSprite.src = "img/s"+i+".png";
-		context.drawImage(imgSprite, w/2 - imgSprite.width/2, h*0.75 - imgSprite.height/2);
+		context.drawImage(imgArray[i], w/2 - 64, h*0.75 - 64);
 		i++;
-		if (i==15) {
+		if (i==14) {
 			clearInterval(timerSprite);
 			x = xn;
 			y = yn;
@@ -398,5 +389,14 @@ function sprite() {
 		}
 	}
 	timerSprite = setInterval(drawSprite, 50);
-
+}
+function genImgArray(argument) {
+	for (var i = 0; i <= 13; i++) {
+		imgArray[i] = new Image();
+		imgArray[i].src = "img/s"+i+".png";
+	}
+}
+function score() {
+	format++;
+	document.getElementById("score").innerHTML = format;
 }
