@@ -17,10 +17,11 @@ var colorScheme = {
 var array = new Array();
 var angle = 0;
 var imgCar = new Image();
-		imgCar.src = "car.png";
+		imgCar.src = "img/car.png";
 var flag_left = false;
 var flag_right = false;
 var timer;
+var timerSprite;
 var btn;
 
 
@@ -282,8 +283,6 @@ window.onload = function (){
 	timer = setInterval(changePos, 25);
 }
 
-
-
 window.onkeydown = function (e) {
 	if (e.keyCode == 37) {
 		flag_left = true;
@@ -348,6 +347,7 @@ function changePos() {
 	if (collision()) {
 		clearInterval(timer);
 		btn.style.display = "block";
+		sprite();
 	}
 	if (flag_left) {
 		angle -= 4;  //скорость поворота менять здесь
@@ -377,6 +377,26 @@ function collision () {
 		  parseInt(colorScheme.background.substr(5,2),16)==pixel[2]) {
 		return true;
 	}
-	
-	return false;
+		return false;
+}
+
+function sprite() {
+	var imgSprite = new Image();
+	var i = 1;
+	function drawSprite() {
+		x = xn;
+		y = yn;
+		drawRoad();
+		imgSprite.src = "img/"+i+".png";
+		context.drawImage(imgSprite, w/2 - imgSprite.width/2, h*0.75 - imgSprite.height/2);
+		i++;
+		if (i==6) {
+			clearInterval(timerSprite);
+			x = xn;
+			y = yn;
+			drawRoad();
+		}
+	}
+	timerSprite = setInterval(drawSprite, 100);
+
 }
