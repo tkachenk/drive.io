@@ -387,16 +387,16 @@ function sprite() {
 		x = xn;
 		y = yn;
 		drawRoad();
-		imgSprite.src = "img/"+i+".png";
+		imgSprite.src = "img/s"+i+".png";
 		context.drawImage(imgSprite, w/2 - imgSprite.width/2, h*0.75 - imgSprite.height/2);
 		i++;
-		if (i==6) {
+		if (i==15) {
 			clearInterval(timerSprite);
 			x = xn;
 			y = yn;
 			drawRoad();
 		}
 	}
-	timerSprite = setInterval(drawSprite, 100);
+	timerSprite = setInterval(drawSprite, 50);
 
 }
